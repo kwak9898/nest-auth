@@ -13,6 +13,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(userName: string, password: string): Promise<any> {
     const user = this.authService.validateUser(userName, password);
 
+    // 유저가 일치하지 않으면
     if (!user) {
       throw new UnauthorizedException();
     }
