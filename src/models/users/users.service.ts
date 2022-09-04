@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../entities/user.entity';
 import { Repository } from 'typeorm';
@@ -37,6 +37,15 @@ export class UsersService {
 
   // Email 값을 이용한 User 정보 가져오기
   async getByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email: email } });
+    const user = this.userRepository.findOne({ where: { email: email } });
+
+    if (user) {
+      return user;
+    } else {
+      throw new HttpException(
+        '존재하지 않은 유저입니다.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }
