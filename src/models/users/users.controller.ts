@@ -23,6 +23,7 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
+  @Public()
   @Post()
   async createUser(@Body() user: User): Promise<void> {
     return this.usersService.createUser(user);
