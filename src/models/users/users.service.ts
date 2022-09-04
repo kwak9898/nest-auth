@@ -26,8 +26,9 @@ export class UsersService {
   }
 
   // 유저 생성
-  async createUser(user: User): Promise<void> {
+  async createUser(user: User): Promise<User> {
     await this.userRepository.save(user);
+    return user;
   }
 
   // 특정 사용자 이름 찾기

@@ -1,9 +1,18 @@
 import { AuthService } from './auth.service';
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { LocalAuthGuard } from '../../guards/auth/localAuth.guard';
 import { JwtAuthGuard } from '../../guards/auth/jwtAuth.guard';
 import { Public } from '../../decorators/skipAuth.decorator';
+import { User } from '../../entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -26,5 +35,12 @@ export class AuthController {
   @Get('profile')
   getProfile(@Req() req) {
     return req.user;
+  }
+
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  @Post('register')
+  async register(@Body() user: User): Promise<any> {
+    return this.authService.register(user);
   }
 }
