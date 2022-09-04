@@ -12,7 +12,7 @@ import { Response } from 'express';
 import { LocalAuthGuard } from '../../guards/auth/localAuth.guard';
 import { JwtAuthGuard } from '../../guards/auth/jwtAuth.guard';
 import { Public } from '../../decorators/skipAuth.decorator';
-import { User } from '../../entities/user.entity';
+import { User } from '../../database/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
