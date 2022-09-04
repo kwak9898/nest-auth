@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../database/entities/user.entity';
 import { Repository } from 'typeorm';
+import { compare, hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -59,5 +60,32 @@ export class UsersService {
     }
 
     throw new HttpException('존재하지 않은 유저입니다.', HttpStatus.NOT_FOUND);
+  }
+
+  // DB에 발급받은 Refresh Token 암호화 저장
+  async setCurrentRefreshToken(refreshToken: string, id: number) {
+    const currentHashedRefreshToken = await hash(refreshToken, 10);
+    await this.userRepository.update(id, { currentHashedRefreshToken });
+  }
+
+  // Id 값을 이용한 Refresh Token 유효한지 확인
+  async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
+    const user = await this.getById(id);
+
+    const isRefreshTokenMatching = await compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
+  // Refresh Token 초기화
+  async removeRefreshToken(id: number) {
+    return this.userRepository.update(id, {
+      currentHashedRefreshToken: null,
+    });
   }
 }

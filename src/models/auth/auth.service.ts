@@ -38,16 +38,6 @@ export class AuthService {
     };
   }
 
-  async logout() {
-    return {
-      token: '',
-      domain: 'localhost',
-      path: '/',
-      httpOnly: true,
-      maxAge: 0,
-    };
-  }
-
   async register(user: User) {
     const hashedPassword = await hash(user.password, 12);
     try {
@@ -65,6 +55,66 @@ export class AuthService {
         );
       }
     }
+  }
+
+  // Access Token 발급
+  getCookieWithJwtAccessToken(id: number) {
+    const payload = { id };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
+
+    return {
+      accessToken: token,
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+      maxAge:
+        Number(this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME')) *
+        1000,
+    };
+  }
+
+  // Refresh Token 발급
+  getCookieWithJwtRefreshToken(id: number) {
+    const payload = { id };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
+
+    return {
+      refreshToken: token,
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+      maxAge:
+        Number(this.configService.get('JWT_REFRESH_TOKEN_EXPIRATION_TIME')) *
+        1000,
+    };
+  }
+
+  // 로그아웃
+  getCookiesForLogOut() {
+    return {
+      accessOption: {
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+        maxAge: 0,
+      },
+      refreshOption: {
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+        maxAge: 0,
+      },
+    };
   }
 
   private async verifyPassword(
