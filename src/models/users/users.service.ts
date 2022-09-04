@@ -49,4 +49,15 @@ export class UsersService {
       );
     }
   }
+
+  // 유저 ID 가져오기
+  async getById(id: number) {
+    const user = await this.userRepository.findOne({ where: { id: id } });
+
+    if (user) {
+      return user;
+    }
+
+    throw new HttpException('존재하지 않은 유저입니다.', HttpStatus.NOT_FOUND);
+  }
 }
