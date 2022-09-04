@@ -3,12 +3,14 @@ import { UsersService } from '../users/users.service';
 import { User } from '../../database/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   // 비밀번호 유효성 검사
@@ -27,7 +29,23 @@ export class AuthService {
   async login(user: User) {
     const payload = { email: user.email, id: user.id };
     const token = this.jwtService.sign(payload);
-    return token;
+    return {
+      token: token,
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+      maxAge: Number(this.configService.get('JWT_EXPIRATION_TIME')) * 1000,
+    };
+  }
+
+  async logout() {
+    return {
+      token: '',
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true,
+      maxAge: 0,
+    };
   }
 
   async register(user: User) {

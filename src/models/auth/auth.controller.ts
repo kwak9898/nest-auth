@@ -23,12 +23,14 @@ export class AuthController {
   @Post('login')
   async login(@Req() req, @Res({ passthrough: true }) res: Response) {
     // 쿠키 저장을 위한 res 생성
-    const token = await this.authService.login(req.user);
-    res.cookie('Authentication', token, {
-      domain: 'localhost',
-      path: '/',
-      httpOnly: true,
-    });
+    const { token, ...option } = await this.authService.login(req.user);
+    res.cookie('Authentication', token, option);
+  }
+
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) res: Response) {
+    const { token, ...option } = await this.authService.logout();
+    res.cookie('Authentication', token, option);
   }
 
   @UseGuards(JwtAuthGuard)
