@@ -34,4 +34,9 @@ export class UsersService {
   async findByUserName(userName: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { userName } });
   }
+
+  // Email 값을 이용한 User 정보 가져오기
+  async getByEmail(email: string) {
+    return this.userRepository.findOne({ where: { email: email } });
+  }
 }
