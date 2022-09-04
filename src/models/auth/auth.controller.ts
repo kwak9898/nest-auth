@@ -38,7 +38,6 @@ export class AuthController {
   }
 
   @Public()
-  @UseGuards(LocalAuthGuard)
   @Post('register')
   async register(@Body() user: User): Promise<any> {
     return this.authService.register(user);
